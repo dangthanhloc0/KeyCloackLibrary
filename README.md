@@ -1,6 +1,16 @@
 # KeyCloak Library - Authorization & Authentication Service
 
-License: MIT | Java: 11+ | Spring Boot: 2.x
+License: MIT | Java: 17+ | Spring Boot: 3.x
+
+```
+ _____          _____  _                 _
+|  |  |___   __|     |(_)___ ___ ___ _ _| |
+| -| -| . | / /| | | || / __/ _ \ _ \ '_| |
+|_____|___|/_/||____ ||__| |___/___/ |_|_|_|
+              |_____|
+
+Easy Authentication & Authorization for Java
+```
 
 ---
 
@@ -26,6 +36,29 @@ License: MIT | Java: 11+ | Spring Boot: 2.x
 KeyCloak Library is a comprehensive integration with Keycloak (an open-source Identity and Access Management platform). It provides easy-to-use methods for handling authentication, authorization, user management, and role-based access control in Spring Boot applications.
 
 The library simplifies complex Keycloak REST API calls into simple Java method calls, allowing developers to focus on business logic rather than integration details.
+
+```
+YOUR APPLICATION
+       |
+       | Uses
+       v
++------------------+
+| KeyCloak Library |
++------------------+
+       |
+       | Communicates with
+       v
++------------------+
+|   Keycloak       |
+|   Server         |
++------------------+
+       |
+       | Stores
+       v
++------------------+
+|   Database      |
++------------------+
+```
 
 ---
 
@@ -67,47 +100,46 @@ The library simplifies complex Keycloak REST API calls into simple Java method c
 
 ```
 KeyCloakLibary/
-├── authz-core/                          [Core authorization module]
-│   ├── src/main/java/org/ldang/keycloack/
-│   │   ├── Configuration/              [Configuration classes]
-│   │   │   └── KeyCloakProperties.java
-│   │   ├── constans/                   [Constants]
-│   │   │   ├── AuthzConstans.java
-│   │   │   └── AuthzErrorCode.java
-│   │   ├── dto/                        [Data Transfer Objects]
-│   │   │   ├── role/
-│   │   │   ├── token/
-│   │   │   └── user/
-│   │   ├── exception/                  [Exception handling]
-│   │   │   └── GlobalExceptionCustom.java
-│   │   ├── helper/                     [Helper functions]
-│   │   │   └── CommonHelpers.java
-│   │   ├── service/                    [Service layer]
-│   │   │   ├── KeyCloakService.java    [Interface]
-│   │   │   └── KeyCloakServiceImpl.java [Implementation]
-│   │   └── utils/                      [Utilities]
-│   │       ├── KCResponse.java
-│   │       ├── TokenDecoder.java
-│   │       └── validation/
-│   ├── pom.xml
-│   └── KEYCLOAK_SERVICE_DOCUMENTATION.md
-│
-├── AuthenticaitonService/               [Authentication microservice]
-│   ├── src/main/java/com/ldang/auth/
-│   ├── resources/
-│   │   └── application.properties
-│   └── pom.xml
-│
-├── commonUtils/                         [Shared utilities]
-├── configation/                         [Configuration module]
-├── api-gatewave/                        [API Gateway]
-├── OrderService/                        [Order management microservice]
-├── paymentService/                      [Payment microservice]
-├── productService/                      [Product microservice]
-├── StockService/                        [Inventory microservice]
-├── userService/                         [User microservice]
-├── TaoRung/                             [Demo application]
-└── README.md                            [This file]
+|
++-- authz-core/                               [Core authorization module]                
+|   +-- src/main/java/org/ldang/keycloack/
+|   |   +-- config/                           [Configuration for RestTemplate]
+|   |   |   +-- RestTemplateConfig.java
+|   |   |
+|   |   +-- Configuration/                    [Configuration classes]
+|   |   |   +-- KeyCloakProperties.java
+|   |   |   +-- KeyCloakAutoConfiguration.java
+|   |   |
+|   |   +-- constans/                         [Constants]
+|   |   |   +-- AuthzConstans.java
+|   |   |   +-- AuthzErrorCode.java
+|   |   |
+|   |   +-- dto/                              [Data Transfer Objects]     
+|   |   |   +-- role/
+|   |   |   +-- token/
+|   |   |   +-- user/
+|   |   |
+|   |   +-- exception/                        [Exception handling]
+|   |   |   +-- AuthzException.java
+|   |   |   +-- GlobalExceptionCustom.java
+|   |   |   +-- GlobalExceptionHandler.java
+|   |   |
+|   |   +-- helper/                           [Helper functions]           
+|   |   |   +-- CommonHelpers.java
+|   |   |   +-- KCError.java
+|   |   |
+|   |   +-- service/                          [Service layer]
+|   |   |   +-- KeyCloakService.java          [Interface]
+|   |   |   +-- KeyCloakServiceImpl.java      [Implementation]
+|   |   |
+|   |   +-- utils/                            [Utility  classes]        
+|   |       +-- KCResponse.java
+|   |       +-- TokenDecoder.java
+|   |       +-- validation/
+|   |
+|   +-- pom.xml
+|   +-- KEYCLOAK_SERVICE_DOCUMENTATION.md
+                      
 ```
 
 ---
@@ -115,10 +147,10 @@ KeyCloakLibary/
 ## System Requirements
 
 ### Required Software
-- Java: 11 or higher
+- Java: 17 or higher
 - Maven: 3.6.0 or higher
-- Spring Boot: 2.x or later
-- Keycloak: 12.0 or later
+- Spring Boot: 3.x or later
+- Keycloak: 26.x (latest stable)
 
 ### Optional Software
 - Docker: For running Keycloak in containers
@@ -131,8 +163,7 @@ KeyCloakLibary/
 ### Step 1: Clone Repository
 
 ```bash
-git clone <repository-url>
-cd sourceTraining
+git clone https://github.com/dangthanhloc0/KeyCloackLibary.git
 ```
 
 ### Step 2: Build with Maven
@@ -151,13 +182,7 @@ mvn clean install
 #### Option 1: Using Docker (Recommended)
 
 ```bash
-docker run -d \
-  --name keycloak \
-  -p 8080:8080 \
-  -e KEYCLOAK_ADMIN=admin \
-  -e KEYCLOAK_ADMIN_PASSWORD=admin \
-  quay.io/keycloak/keycloak:latest \
-  start-dev
+docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev
 ```
 
 Access Admin Console: http://localhost:8080/admin
@@ -180,36 +205,49 @@ cd keycloak-20.0.0
 
 Access Admin Console at: http://localhost:8080/admin
 
+### Login
+- Username: admin
+- Password: admin
+
 #### Create a Realm
-1. Click on "Master" at the top left
+1. Click on "Manage realms" at the top left
 2. Select "Create realm"
-3. Enter realm name: "my-realm"
+![img_2.png](img_2.png)
+3. Enter realm name: "your-realm". Ex: **ApplicationRealm**
 4. Click "Create"
+![img_4.png](img_4.png)
 
 #### Create a Client
-1. Navigate to your realm
+1. Click and Navigate to your realm
+![img_5.png](img_5.png)
 2. Go to "Clients" section
 3. Click "Create"
+![img_6.png](img_6.png)
 4. Fill in:
-   - Client ID: "my-client"
+   - Client ID: "your-client-ID"
    - Client Protocol: "openid-connect"
-5. Click "Save"
+![img_7.png](img_7.png)
+5. Click "Next"
 
 #### Configure Client
-1. Go to "Clients" > "my-client"
-2. In the "Settings" tab:
-   - Access Type: "confidential"
+6. In the "capability config " tab:
+   - Client authentication : ON
+   - Authorization: ON
    - Standard Flow Enabled: ON
    - Direct Access Grants Enabled: ON
-3. In the "Credentials" tab: Copy the "Client Secret"
+![img_8.png](img_8.png)
+7. Click "Next".
+8. Fill in:
+    - Root URL: ${authBaseUrl}
+    - Home URL: /realms/{your-Realm}/{your-client-ID}/
+    - Valid redirect URIs: /realms/{your-Realm}/{your-client-ID}/*
+![img_9.png](img_9.png)
+9. Click "Save"
 
-#### Create a Test User
-1. Go to "Users" section
-2. Click "Add user"
-3. Fill in user information
-4. Go to "Credentials" tab
-5. Set a password
-
+### Client ID
+10. Go to "Clients" > "your-client-ID"
+11. In the "Credentials" tab: Copy the "Client Secret"
+![img_10.png](img_10.png)
 ---
 
 ## Configuration
@@ -220,53 +258,28 @@ Create or update `application.properties` in your Spring Boot application:
 
 ```properties
 # Keycloak Server Configuration
-keycloak.domain-url=http://localhost:8080/auth
-keycloak.realm-name=my-realm
-keycloak.client-id=my-client
-keycloak.client-secret=YOUR_CLIENT_SECRET_HERE
-
+keycloak.domainUrl=http://localhost:8080
+keycloak.realmName={your-realm}
+keycloak.clientSecret={your-client-secret}
+keycloak.clientId={your-client-ID}
 # Admin Credentials for API Operations
-keycloak.admin-username=admin
-keycloak.admin-password=admin
-
-# Application Server
-server.port=8081
+keycloak.adminUsername=admin
+keycloak.adminPassword=admin
 ```
 
 ### Method 2: Using application.yml
 
 ```yaml
+# Keycloak Server Configuration
 keycloak:
-  domain-url: http://localhost:8080/auth
-  realm-name: my-realm
-  client-id: my-client
-  client-secret: YOUR_CLIENT_SECRET_HERE
-  admin-username: admin
-  admin-password: admin
+  domainUrl: http://localhost:8080
+  realmName: your-realm
+  clientId: your-client-ID
+  clientSecret: your-client-secret
 
-server:
-  port: 8081
-```
-
-### Method 3: Java Configuration
-
-```java
-@Configuration
-public class KeyCloakConfig {
-    
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-    
-    @Bean
-    public KeyCloakService keyCloakService(
-            KeyCloakProperties props,
-            RestTemplate restTemplate,
-            TokenDecoder tokenDecoder) {
-        return new KeyCloakServiceImpl(props, restTemplate, tokenDecoder);
-    }
-}
+  # Admin Credentials for API Operations
+  adminUsername: admin
+  adminPassword: admin
 ```
 
 ---
@@ -287,6 +300,20 @@ public class AuthenticationService {
 ```
 
 ### Example 1: User Login
+
+```
+STEP 1: Client sends login request
+    |
+    v
+CLIENT ----[POST /login]----> YOUR APPLICATION
+    |                              |
+    |                              | Calls keycloakService.login()
+    |                              v
+    |                         KEYCLOAK SERVER
+    |                              |
+    |<----[access_token]---------- +
+    |<----[refresh_token]--------- +
+```
 
 ```java
 @PostMapping("/login")
@@ -347,6 +374,24 @@ Request example:
 
 ### Example 3: Token Refresh
 
+```
+TOKEN EXPIRES
+    |
+    v
+CLIENT has old token
+    |
+    v
+CLIENT sends refresh request with refresh_token
+    |
+    v
+YOUR APPLICATION ----[refresh_token]----> KEYCLOAK
+    |                                           |
+    |<--------[new access_token]------------- +
+    |
+    v
+CLIENT stores new token and continues
+```
+
 ```java
 @PostMapping("/refresh-token")
 public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest request) {
@@ -386,6 +431,27 @@ public ResponseEntity<?> validateToken(
 ```
 
 ### Example 5: Role-Based Access Control
+
+```
+USER makes request to PROTECTED ENDPOINT
+    |
+    v
+APPLICATION checks token
+    |
+    +---> Token valid?
+    |       Yes: Continue
+    |       No: Return 401
+    |
+    v
+APPLICATION checks user role
+    |
+    +---> User has admin role?
+    |       Yes: Grant access
+    |       No: Return 403
+    |
+    v
+ENDPOINT executes
+```
 
 ```java
 @PostMapping("/admin-only")
@@ -543,38 +609,6 @@ Available methods for user authentication:
 | KEYCLOAK_CONNECTION_ERROR | 503 | Cannot connect to Keycloak |
 | UNKNOWN_ERROR | 500 | Unknown error occurred |
 
-### Handling Errors in Your Code
-
-```java
-@ExceptionHandler(AuthzException.class)
-public ResponseEntity<?> handleAuthzException(AuthzException ex) {
-    Map<String, Object> errorResponse = new HashMap<>();
-    errorResponse.put("error_code", ex.getErrorCode());
-    errorResponse.put("error_message", ex.getMessage());
-    errorResponse.put("timestamp", LocalDateTime.now());
-    
-    HttpStatus status = getHttpStatusForErrorCode(ex.getErrorCode());
-    
-    return ResponseEntity.status(status).body(errorResponse);
-}
-
-private HttpStatus getHttpStatusForErrorCode(String code) {
-    switch(code) {
-        case "INVALID_USER_NAME_OR_PASSWORD":
-            return HttpStatus.UNAUTHORIZED;
-        case "USER_NOT_FOUND":
-            return HttpStatus.NOT_FOUND;
-        case "VALIDATION_ERROR":
-        case "DUPLICATE":
-            return HttpStatus.BAD_REQUEST;
-        case "FORBIDDEN":
-            return HttpStatus.FORBIDDEN;
-        default:
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-}
-```
-
 ### Check Response Status
 
 Always check if response is successful before using data:
@@ -594,100 +628,6 @@ if (response.isSuccess()) {
 
 ---
 
-## Optimization Tips
-
-### 1. Cache User Roles
-
-Avoid repeated role lookups by caching:
-
-```java
-@Cacheable(value = "userRoles", key = "#userId")
-public RoleResponse getUserRoles(String userId) {
-    return keycloakService.getAllRolesOfUser(userId).getData();
-}
-
-// Invalidate cache when roles change
-@CacheEvict(value = "userRoles", key = "#userId")
-public void invalidateUserRoleCache(String userId) {
-}
-```
-
-### 2. Use Async Operations
-
-For non-critical operations, use async processing:
-
-```java
-@Async
-public CompletableFuture<UserInformation> registerUserAsync(RegisterRequest req) {
-    KCResponse<UserInformation> response = 
-        keycloakService.register(req, "user");
-    
-    if (response.isSuccess()) {
-        return CompletableFuture.completedFuture(response.getData());
-    }
-    
-    return CompletableFuture.failedFuture(
-        new RuntimeException("Registration failed")
-    );
-}
-```
-
-### 3. Configure Connection Timeouts
-
-```java
-@Bean
-public RestTemplate restTemplate() {
-    HttpComponentsClientHttpRequestFactory factory = 
-        new HttpComponentsClientHttpRequestFactory();
-    
-    // Set timeouts (in milliseconds)
-    factory.setConnectTimeout(5000);    // 5 seconds
-    factory.setReadTimeout(10000);      // 10 seconds
-    
-    return new RestTemplate(factory);
-}
-```
-
-### 4. Batch Operations
-
-When assigning multiple roles, do it sequentially with proper error handling:
-
-```java
-public void assignMultipleRoles(String userId, List<String> roleNames) {
-    for (String roleName : roleNames) {
-        try {
-            keycloakService.assignRealmRole(userId, roleName);
-        } catch (Exception e) {
-            log.error("Failed to assign role: " + roleName, e);
-        }
-    }
-}
-```
-
-### 5. Log Important Events
-
-```java
-@Service
-public class AuditService {
-    
-    @Autowired
-    private Logger logger;
-    
-    public void logUserLogin(String username, boolean success) {
-        if (success) {
-            logger.info("User logged in: " + username);
-        } else {
-            logger.warn("Failed login attempt: " + username);
-        }
-    }
-    
-    public void logRoleAssignment(String userId, String roleName) {
-        logger.info("Role assigned - User: " + userId + ", Role: " + roleName);
-    }
-}
-```
-
----
 
 ## Contributing
 
@@ -721,6 +661,13 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 Version: 1.0.0
 Last Updated: December 28, 2025
-Java Compatibility: 11+
-Spring Boot Compatibility: 2.x+
+Java Compatibility: 17+
+Spring Boot Compatibility: 3.x+
+```
 
+
+Authored by: Dang Thanh Loc
+contact: 
+ - Email: dangthanhloca2@gmail.com
+ - Phone: +84 379001285
+ - Fb: https://www.facebook.com/angloc.149807/
