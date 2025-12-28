@@ -282,6 +282,18 @@ keycloak:
   adminPassword: admin
 ```
 
+### Method 3: Using in your Project
+
+```pom.xml
+Add dependency to your pom.xml:
+  <dependency>
+      <groupId>org.ldang.keycloack</groupId>
+      <artifactId>authz-core</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+  </dependency>
+```
+
 ---
 
 ## Usage Guide
