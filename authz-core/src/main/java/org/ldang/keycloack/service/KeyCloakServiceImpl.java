@@ -43,18 +43,19 @@ public class KeyCloakServiceImpl implements KeyCloakService {
 
     private final RestTemplate restTemplate;
     private final KeyCloakProperties props;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
     private String mainURL = "";
     private String adminRealmsUrl = "";
     private final TokenDecoder tokenDecoder;
 
 
-    public KeyCloakServiceImpl(KeyCloakProperties props, RestTemplate restTemplate, TokenDecoder tokenDecoder) {
+    public KeyCloakServiceImpl(KeyCloakProperties props, RestTemplate restTemplate, TokenDecoder tokenDecoder,ObjectMapper objectMapper) {
         this.props = props;
         this.restTemplate = restTemplate;
         this.mainURL = props.getDomainUrl() + AuthzConstans.ADMIN_REALM + props.getRealmName();
         this.adminRealmsUrl = props.getDomainUrl() + AuthzConstans.REALMS_MASTER + "protocol/openid-connect";
         this.tokenDecoder = tokenDecoder;
+        this.objectMapper = objectMapper;
     }
 
     public String getAccessToken() {

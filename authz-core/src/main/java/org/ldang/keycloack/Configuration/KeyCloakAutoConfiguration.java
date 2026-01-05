@@ -1,5 +1,6 @@
 package org.ldang.keycloack.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ldang.keycloack.service.KeyCloakService;
 import org.ldang.keycloack.service.KeyCloakServiceImpl;
 import org.ldang.keycloack.utils.TokenDecoder;
@@ -14,12 +15,12 @@ import org.springframework.web.client.RestTemplate;
 public class KeyCloakAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
-    public KeyCloakService keyCloakService(RestTemplate restTemplate, TokenDecoder tokenDecoder, KeyCloakProperties props) {
+    public KeyCloakService keyCloakService(RestTemplate restTemplate, TokenDecoder tokenDecoder, KeyCloakProperties props, ObjectMapper objectMapper) {
         return new KeyCloakServiceImpl(
                 props,
                 restTemplate,
-                tokenDecoder
+                tokenDecoder,
+                objectMapper
         );
     }
 }
