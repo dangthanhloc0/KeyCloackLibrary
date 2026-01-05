@@ -99,7 +99,7 @@ YOUR APPLICATION
 ## Project Structure
 
 ```
-KeyCloakLibary/
+KeyCloakLibrary/
 |
 +-- authz-core/                               [Core authorization module]                
 |   +-- src/main/java/org/ldang/keycloack/
@@ -163,7 +163,7 @@ KeyCloakLibary/
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/dangthanhloc0/KeyCloackLibary.git
+git clone https://github.com/dangthanhloc0/KeyCloackLibrary.git
 ```
 
 ### Step 2: Build with Maven
@@ -173,7 +173,7 @@ git clone https://github.com/dangthanhloc0/KeyCloackLibary.git
 mvn clean install
 
 # Or build only authz-core
-cd KeyCloakLibary/authz-core
+cd KeyCloakLibrary/authz-core
 mvn clean install
 ```
 
