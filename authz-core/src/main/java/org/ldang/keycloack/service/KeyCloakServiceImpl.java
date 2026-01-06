@@ -247,7 +247,7 @@ public class KeyCloakServiceImpl implements KeyCloakService {
             } catch (Exception ex) {
                 errorMsg = e.getMessage();
             }
-            return  handleKeyCloakException(AuthzErrorCode.UNKNOWN_ERROR, errorMsg);
+            return  handleKeyCloakException(AuthzErrorCode.VALIDATION_ERROR, errorMsg);
         }
         return null;
     }
@@ -279,11 +279,11 @@ public class KeyCloakServiceImpl implements KeyCloakService {
 
             String userId = user.getId();
 
-            var realmRolesList = getRealmRolesOfUser( userId, token);
+            var realmRolesList = getRealmRolesOfUser(userId);
 
             user.setRealmRoles(realmRolesList);
 
-            var clientRolesMap = getClientRolesOfUser( userId, token);
+            var clientRolesMap = getClientRolesOfUser(userId);
             user.setClientRoles(clientRolesMap);
 
 
@@ -299,7 +299,7 @@ public class KeyCloakServiceImpl implements KeyCloakService {
         try {
             String token = getAccessToken();
 
-            var realmRoleData = getRealmRoleData(roleName, token);
+            var realmRoleData = getRealmRoleData(roleName);
             if(!realmRoleData.isSuccess()) {
                 return handleKeyCloakException(AuthzErrorCode.NOT_FOUND_REALM_ROLE, roleName);
             }
@@ -393,8 +393,9 @@ public class KeyCloakServiceImpl implements KeyCloakService {
     }
 
     @Override
-    public KCResponse<RealmRoleResponse> getRealmRoleData(String roleName, String token) {
+    public KCResponse<RealmRoleResponse> getRealmRoleData(String roleName) {
         String url = mainURL + AuthzConstans.ROLES + roleName;
+        String token = getAccessToken();
         HttpHeaders headers = createAdminHeaders(token);
 
         try {
@@ -419,7 +420,7 @@ public class KeyCloakServiceImpl implements KeyCloakService {
     }
 
     @Override
-    public Boolean isUserExsist(String userId) {
+    public Boolean isUserExist(String userId) {
         String token = getAccessToken();
         String url = mainURL + AuthzConstans.USER + userId;
         HttpHeaders headers = createAdminHeaders(token);
@@ -441,8 +442,9 @@ public class KeyCloakServiceImpl implements KeyCloakService {
     }
 
 
-    public  List<String> getRealmRolesOfUser(String userId,String token) {
+    public  List<String> getRealmRolesOfUser(String userId) {
         String realmRolesUrl = mainURL + AuthzConstans.USER + userId + AuthzConstans.MAPPING_ROLE;
+        String token = getAccessToken();
         HttpHeaders headers = createAdminHeaders(token);
         ResponseEntity<JsonNode> realmResponse = restTemplate.exchange(
                 realmRolesUrl,
@@ -460,18 +462,15 @@ public class KeyCloakServiceImpl implements KeyCloakService {
         return  realmRoles;
     }
 
-    public Map<String, List<String>> getClientRolesOfUser(String userId,String token) {
+    public Map<String, List<String>> getClientRolesOfUser(String userId) {
         String clientsUrl = mainURL + "/clients";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        String token = getAccessToken();
+        HttpHeaders headers = createAdminHeaders(token);
 
         ResponseEntity<JsonNode> clientsResponse = restTemplate.exchange(
                 clientsUrl,
                 HttpMethod.GET,
-                entity,
+                new HttpEntity<>(headers),
                 JsonNode.class
         );
 
@@ -486,7 +485,7 @@ public class KeyCloakServiceImpl implements KeyCloakService {
                 ResponseEntity<JsonNode> clientRolesResponse = restTemplate.exchange(
                         clientRolesUrl,
                         HttpMethod.GET,
-                        entity,
+                        new HttpEntity<>(headers),
                         JsonNode.class
                 );
 
@@ -524,7 +523,6 @@ public class KeyCloakServiceImpl implements KeyCloakService {
 
             String clientId = clientsResponse.getBody().get(0).get("id").asText();
 
-            // 3️⃣ Lấy tất cả role trong client
             String rolesUrl = mainURL + "/clients/" + clientId + "/roles";
 
             ResponseEntity<JsonNode> rolesResponse = restTemplate.exchange(
@@ -538,14 +536,13 @@ public class KeyCloakServiceImpl implements KeyCloakService {
                 throw new RuntimeException("No roles found for client: " + clientName);
             }
 
-            // 4️⃣ Tìm roleName
             for (JsonNode role : rolesResponse.getBody()) {
                 if (role.get("name").asText().equals(roleName)) {
                     return role.get("id").asText();
                 }
             }
 
-            return null; // không tìm thấy
+            return null;
         } catch (Exception e) {
             throw new RuntimeException("Failed to get client role ID for role: " + roleName + " in client: " + clientName, e);
         }
@@ -561,12 +558,12 @@ public class KeyCloakServiceImpl implements KeyCloakService {
                 return handleKeyCloakException(USER_NOT_FOUND, userId);
             }
 
-            var realmRolesList = getRealmRolesOfUser( userId, token);
+            var realmRolesList = getRealmRolesOfUser(userId);
 
             RoleResponse roleResponse = new RoleResponse();
             roleResponse.setRealmRoles(realmRolesList);
 
-            var clientRolesMap = getClientRolesOfUser( userId, token);
+            var clientRolesMap = getClientRolesOfUser(userId);
             roleResponse.setClientRoles(clientRolesMap);
 
             return KCResponse.success(roleResponse);
@@ -673,11 +670,11 @@ public class KeyCloakServiceImpl implements KeyCloakService {
                 return handleKeyCloakException(AuthzErrorCode.USER_NOT_FOUND, userId);
             }
 
-            var realmRolesList = getRealmRolesOfUser(userId, token);
+            var realmRolesList = getRealmRolesOfUser(userId);
 
             user.setRealmRoles(realmRolesList);
 
-            var clientRolesMap = getClientRolesOfUser(userId, token);
+            var clientRolesMap = getClientRolesOfUser(userId);
             user.setClientRoles(clientRolesMap);
             return KCResponse.success(user);
         } catch (HttpClientErrorException e) {

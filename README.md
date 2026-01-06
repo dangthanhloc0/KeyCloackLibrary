@@ -293,6 +293,166 @@ Add dependency to your pom.xml:
       <scope>compile</scope>
   </dependency>
 ```
+```pom.xml
+Add dependency to your pom.xml:
+        <dependency>
+            <groupId>org.ldang.keycloack</groupId>
+            <artifactId>authz-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+        <!-- Spring Boot Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+```
+
+### Method 4: Add Component Scan in main application
+![img_11.png](img_11.png)
+
+### Method 5: Add security config
+```pom.xml
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+        http
+
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // not save session, per request need token
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)) // active JWT authentication
+                ).csrf(csrf -> csrf.disable()) ;// disable CSRF for APIs;
+
+        return http.build();
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        JwtGrantedAuthoritiesConverter defaultGrantedConverter = new JwtGrantedAuthoritiesConverter();
+        defaultGrantedConverter.setAuthorityPrefix("SCOPE_");
+
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Collection<String> roles = new ArrayList<>();
+
+            Object realmAccess = jwt.getClaim("realm_access");
+            if (realmAccess instanceof Map) {
+                Object r = ((Map<?, ?>) realmAccess).get("roles");
+                if (r instanceof Collection) {
+                    ((Collection<?>) r).forEach(x -> roles.add(String.valueOf(x)));
+                }
+            }
+
+            Object resourceAccess = jwt.getClaim("resource_access");
+            if (resourceAccess instanceof Map) {
+                ((Map<?, ?>) resourceAccess).forEach((client, value) -> {
+                    if (value instanceof Map) {
+                        Object rolesObj = ((Map<?, ?>) value).get("roles");
+                        if (rolesObj instanceof Collection) {
+                            ((Collection<?>) rolesObj).forEach(x -> roles.add(String.valueOf(x)));
+                        }
+                    }
+                });
+            }
+
+            Object groups = jwt.getClaim("groups");
+            if (groups instanceof Collection) {
+                ((Collection<?>) groups).forEach(x -> roles.add(String.valueOf(x)));
+            }
+
+            List<org.springframework.security.core.GrantedAuthority> authorities =
+                    roles.stream()
+                            .filter(Objects::nonNull)
+                            .map(String::valueOf)
+                            .distinct()
+                            .map(r -> "ROLE_" + r)
+                            .map(org.springframework.security.core.authority.SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
+
+            Collection<org.springframework.security.core.GrantedAuthority> scopeAuthorities =
+                    defaultGrantedConverter.convert(jwt);
+
+            List<org.springframework.security.core.GrantedAuthority> result = new ArrayList<>();
+            if (scopeAuthorities != null) result.addAll(scopeAuthorities);
+            result.addAll(authorities);
+
+            return result;
+        });
+
+        return converter;
+    }
+}
+
+```
+
 
 ---
 

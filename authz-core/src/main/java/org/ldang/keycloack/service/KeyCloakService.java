@@ -178,10 +178,9 @@ public interface KeyCloakService {
      * </ul>
      *
      * @param userId The unique identifier (UUID) of the user.
-     * @param token The access token of an admin or system user for authorization to the Keycloak admin API.
      * @return {@link List} of realm role names (String) assigned to the user. Returns empty list if no roles.
      */
-    List<String> getRealmRolesOfUser(String userId, String token);
+    List<String> getRealmRolesOfUser(String userId);
 
     /**
      * Get client roles of a user by userId.
@@ -198,11 +197,10 @@ public interface KeyCloakService {
      * </ul>
      *
      * @param userId The unique identifier (UUID) of the user.
-     * @param token The access token of an admin or system user for authorization to the Keycloak admin API.
      * @return {@link Map} with client names as keys and {@link List} of client role names as values.
      *         Empty map if user has no client roles or belongs to no clients.
      */
-    Map<String, List<String>> getClientRolesOfUser(String userId,String token);
+    Map<String, List<String>> getClientRolesOfUser(String userId);
 
     /**
      * Refresh access token using refresh token.
@@ -446,14 +444,13 @@ public interface KeyCloakService {
      * </ul>
      *
      * @param roleName The name of the realm role to retrieve data for (case-sensitive).
-     * @param token The access token of an admin user for authorization.
      * @return {@link KCResponse} containing {@link RealmRoleResponse} with role metadata.
      * @throws AuthzException with code NOT_FOUND_REALM_ROLE if role does not exist.
      * @throws AuthzException with code FORBIDDEN if insufficient permissions.
      * @throws AuthzException with code UNAUTHORIZED if token is invalid or expired.
      * @throws AuthzException with code API_ERROR for other unexpected errors.
      */
-    KCResponse<RealmRoleResponse> getRealmRoleData(String roleName, String token);
+    KCResponse<RealmRoleResponse> getRealmRoleData(String roleName);
 
     /**
      * Check if a user exists in Keycloak by userId.
@@ -471,7 +468,7 @@ public interface KeyCloakService {
      * @param userId The unique identifier (UUID) of the user to check.
      * @return true if the user exists in Keycloak, false otherwise.
      */
-    Boolean isUserExsist(String userId);
+    Boolean isUserExist(String userId);
 
     /**
      * Decode and extract information from an access token.
