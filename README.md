@@ -1,6 +1,6 @@
 # KeyCloak Library - Authorization & Authentication Service
-page: https://dangthanhloc0.github.io/ldangk3/setup
-Instruction setup: https://www.youtube.com/watch?v=drWfm5a8SG8
+- page: https://dangthanhloc0.github.io/ldangk3/setup
+- Instruction setup: https://www.youtube.com/watch?v=drWfm5a8SG8
 
 License: MIT | Java: 17+ | Spring Boot: 3.x
 
